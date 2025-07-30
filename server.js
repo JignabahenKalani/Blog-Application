@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const sequelize = require("./config/connection");
 const routes = require("./routes");
-const { Post, User, Post_Title } = require("./models"); // import models for homepage
+const { Post, User, Post_Title } = require("./models"); 
 
 const app = express();
 const PORT = process.env.PORT || 3001;
