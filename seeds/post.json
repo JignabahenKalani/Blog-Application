@@ -1,0 +1,122 @@
+[
+  {
+    "title": "Exploring the Future of Quantum Computing",
+    "content": "Quantum computers promise to solve problems beyond classical computing capabilities.",
+    "postedBy": "Alice Johnson",
+    "createdOn": "2024-02-04T12:00:00Z"
+  },
+  {
+    "title": "Demystifying JavaScript Event Loop",
+    "content": "A deep dive into how JavaScript handles asynchronous operations under the hood.",
+    "postedBy": "Brian Lee",
+    "createdOn": "2024-02-03T10:15:00Z"
+  },
+  {
+    "title": "Optimizing Express.js Middleware for Performance",
+    "content": "Tips and tricks to make your middleware faster and more efficient.",
+    "postedBy": "Catherine Miller",
+    "createdOn": "2024-02-02T08:45:00Z"
+  },
+  {
+    "title": "Getting Started with Prisma ORM",
+    "content": "Learn how Prisma makes database management easier in Node.js projects.",
+    "postedBy": "Daniel Smith",
+    "createdOn": "2024-02-01T14:30:00Z"
+  },
+  {
+    "title": "JavaScript Promises Made Simple",
+    "content": "Understanding how to handle asynchronous operations with Promises.",
+    "postedBy": "Emma Watson",
+    "createdOn": "2024-01-30T09:00:00Z"
+  },
+  {
+    "title": "Introduction to RESTful API Design",
+    "content": "Best practices for designing scalable RESTful APIs.",
+    "postedBy": "Frank Harris",
+    "createdOn": "2024-01-29T17:00:00Z"
+  },
+  {
+    "title": "Why You Should Learn TypeScript in 2024",
+    "content": "Advantages of adding static typing to your JavaScript projects.",
+    "postedBy": "Grace Kim",
+    "createdOn": "2024-01-28T11:30:00Z"
+  },
+  {
+    "title": "Building Real-Time Apps with Socket.io",
+    "content": "How to implement real-time communication in your web apps.",
+    "postedBy": "Henry Turner",
+    "createdOn": "2024-01-27T15:45:00Z"
+  },
+  {
+    "title": "Containerizing Node.js Apps with Docker",
+    "content": "Step-by-step guide to Dockerizing your Node.js projects.",
+    "postedBy": "Isabel Young",
+    "createdOn": "2024-01-26T08:20:00Z"
+  },
+  {
+    "title": "Security Essentials for Modern Web Apps",
+    "content": "Protect your applications against common security threats.",
+    "postedBy": "Jack Wilson",
+    "createdOn": "2024-01-25T13:10:00Z"
+  },
+  {
+    "title": "React Context API: Simplifying State Management",
+    "content": "Manage global state in React without prop drilling.",
+    "postedBy": "Karen Martinez",
+    "createdOn": "2024-01-24T10:55:00Z"
+  },
+  {
+    "title": "Serverless Computing: What You Need to Know",
+    "content": "Benefits and challenges of moving to serverless architectures.",
+    "postedBy": "Liam Scott",
+    "createdOn": "2024-01-23T18:25:00Z"
+  },
+  {
+    "title": "HTTP/2 vs HTTP/1.1: What’s New?",
+    "content": "Explore the improvements brought by HTTP/2 for faster web experiences.",
+    "postedBy": "Maya Patel",
+    "createdOn": "2024-01-22T07:40:00Z"
+  },
+  {
+    "title": "Automate Your Workflow with Node.js",
+    "content": "Use Node.js scripts to save time on repetitive tasks.",
+    "postedBy": "Nathan Brooks",
+    "createdOn": "2024-01-21T16:50:00Z"
+  },
+  {
+    "title": "Mastering MongoDB Indexing",
+    "content": "Improve query performance with effective indexing strategies.",
+    "postedBy": "Olivia Turner",
+    "createdOn": "2024-01-20T12:35:00Z"
+  },
+  {
+    "title": "Why Choose Next.js for Your React Projects",
+    "content": "Server-side rendering and other perks with Next.js framework.",
+    "postedBy": "Peter Evans",
+    "createdOn": "2024-01-19T14:20:00Z"
+  },
+  {
+    "title": "OAuth 2.0: Simplified Authentication",
+    "content": "Implement secure and standardized authorization flows in your apps.",
+    "postedBy": "Quincy Adams",
+    "createdOn": "2024-01-18T09:45:00Z"
+  },
+  {
+    "title": "Testing JavaScript with Jest",
+    "content": "How to write unit tests using the Jest testing framework.",
+    "postedBy": "Rachel Green",
+    "createdOn": "2024-01-17T11:15:00Z"
+  },
+  {
+    "title": "Scaling Your Node.js Backend",
+    "content": "Approaches to handling increased load on your Node.js servers.",
+    "postedBy": "Samuel Parker",
+    "createdOn": "2024-01-16T15:05:00Z"
+  },
+  {
+    "title": "Continuous Deployment with GitHub Actions",
+    "content": "Automate your deployment pipelines easily using GitHub Actions.",
+    "postedBy": "Tina Morgan",
+    "createdOn": "2024-01-15T08:50:00Z"
+  }
+]
