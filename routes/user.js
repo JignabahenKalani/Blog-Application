@@ -2,101 +2,52 @@ const router = require("express").Router();
 const { User } = require("../models");
 const { signToken, authMiddleware } = require("../utils/auth");
 
-// Get current authenticated user
-router.get("/me", authMiddleware, async (req, res) => {
-  try {
-    const user = await User.getOne(req.user.id);
-    if (!user) return res.status(401).json({ message: "Token expired" });
-    return res.status(200).json({ user });
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
-
-// GET the User record
-router.get("/:id", async (req, res) => {
-  console.log("looking for user", req.params.id);
-  try {
-    const userData = await User.getOne(req.params.id);
-
-    if (!userData) {
-      res.status(404).json({ message: "No User found with this id" });
-      return;
-    }
-
-    res.status(200).json(userData);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
-
-router.get("/", authMiddleware, async (req, res) => {
-  try {
-    const users = await User.findAll();
-    res.status(200).json(users);
-  } catch (err) {
-    res.status(400).json(err);
-  }
-});
-
+// Register a new user
 router.post("/", async (req, res) => {
-  try {
-    const userData = await User.create(req.body);
+  const { username, email, password, confirm_password } = req.body;
 
-    const token = signToken(userData);
-    res.status(200).json({ token, userData });
-  } catch (err) {
-    res.status(400).json(err);
+  if (!username || !email || !password || !confirm_password) {
+    return res.status(400).json({ message: "All fields are required." });
   }
-});
 
-// UDPATE the User record
-router.put("/:id", async (req, res) => {
+  if (password !== confirm_password) {
+    return res.status(400).json({ message: "Passwords do not match." });
+  }
+
   try {
-    const userData = await User.update(req.body, {
-      where: {
-        id: req.params.id,
-      },
+    const userData = await User.create({
+      username,
+      email,
+      password,
     });
 
-    if (!userData) {
-      res.status(404).json({ message: "No User found with this id" });
-      return;
-    }
-
-    res.status(200).json(userData);
+    const token = signToken(userData);
+    res.status(200).json({ token, user: userData });
   } catch (err) {
-    res.status(500).json(err);
+    console.error("Registration Error:", err);
+    res.status(400).json({ message: "Failed to register user.", error: err.message });
   }
 });
 
+// Login user
 router.post("/login", async (req, res) => {
   try {
     const userData = await User.findOne({ where: { email: req.body.email } });
-    if (!userData) {
-      res
-        .status(400)
-        .json({ message: "Incorrect email or password, please try again" });
-      return;
-    }
 
-    const validPassword = await userData.checkPassword(req.body.password);
-
-    if (!validPassword) {
-      res
+    if (!userData || !userData.checkPassword(req.body.password)) {
+      return res
         .status(400)
-        .json({ message: "Incorrect email or password, please try again" });
-      return;
+        .json({ message: "Incorrect email or password. Please try again." });
     }
 
     const token = signToken(userData);
-    res.status(200).json({ token, userData });
+    res.status(200).json({ token, user: userData });
   } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
+    res.status(400).json({ message: "Login failed", error: err.message });
   }
 });
 
+// Logout (no real session, just clear token client-side)
 router.post("/logout", (req, res) => {
   res.status(204).end();
 });

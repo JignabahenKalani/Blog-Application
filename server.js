@@ -1,34 +1,38 @@
-// packege import 
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
+const sequelize = require("./config/connection");
+const routes = require("./routes");
+const { Post, User, Post_Title } = require("./models"); // import models for homepage
 
-const sequlize = require("./config/connection");
-const routes = require("./route");
-
-// express application initialize
 const app = express();
-app.use(bodyParser.json());
-app.use(express.urlencoded({extended:true}));
-
 const PORT = process.env.PORT || 3001;
 
-const rebulid = process.argv[2]=== "--rebuild";
+const rebuild = process.argv[2] === "--rebuild";
 
-// public directory 
-app.use(express.static(path.join(__dirname,"public")));
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 
-//GET request at the root route
+// Serve static files from /public
+app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/", (req,res)=>{
-    res.sendFile(path.join(__dirname, "public", "index.html"));
+
+app.get("/", async (req, res) => {
+  try {
+    const postsData = await Post.findAll({
+      order: [["createdOn", "DESC"]],
+    });
+    res.json(postsData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
 });
 
-//add routes
 app.use(routes);
 
-// syncronize database 
-
-sequlize.sync({force: rebulid}).then(()=>{
-    app.listen(PORT,()=> console.log(`Now listening in http://localhost:${PORT}`));
+sequelize.sync({ force: rebuild }).then(() => {
+  app.listen(PORT, () =>
+    console.log(`Now listening at http://localhost:${PORT}`)
+  );
 });

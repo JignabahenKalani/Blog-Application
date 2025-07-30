@@ -1,16 +1,15 @@
 const router = require("express").Router();
 
 const postRoutes = require("./post");
-const titleRoutes = require("./title");
+const postTitleRoutes = require("./post_title");
 const userRoutes = require("./user");
 
-// create a default route for /api
 router.get("/api", (req, res) => {
   res.json({ message: "Welcome to the API" });
 });
 
-router.use("/api/title", titleRoutes);
 router.use("/api/posts", postRoutes);
+router.use("/api/post_title", postTitleRoutes);
 router.use("/api/users", userRoutes);
 
 module.exports = router;

@@ -1,42 +1,28 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-const secret = 'mysecretssshhh';
-const expiration = '2h';
+const secret = process.env.JWT_SECRET || "yourSuperSecretKey";
+
+const signToken = ({ id, email }) => {
+  return jwt.sign({ data: { id, email } }, secret, { expiresIn: "2h" });
+};
 
 const authMiddleware = (req, res, next) => {
+  const authHeader = req.headers.authorization;
 
-  let token = req.body.token || req.query.token || req.headers.authorization;
-  console.log('token: ' + token);
-
-  if (req.headers.authorization) {
-    token = token.split(' ').pop().trim();
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Unauthorized: No token provided" });
   }
 
-  if (!token) {
-    res.status(400).json({ message: 'Bearer Token not supplied or invalid' });
-    return;
-  }
+  const token = authHeader.split(" ")[1].trim();
 
   try {
-    const { data } = jwt.verify(token, secret, { maxAge: expiration });
-    req.user = data;
+    const { data } = jwt.verify(token, secret);
+    req.user = data; // attach user info from token payload to request object
     next();
   } catch (err) {
-    console.log('Invalid token');
-    res.status(400).json({ message: 'Invalid token: ' + err.message });
+    console.error("Invalid token:", err.message);
+    return res.status(401).json({ error: "Unauthorized: Invalid token" });
   }
+};
 
-  return req;
-}
-
-const signToken = (user) => {
-
-  const payload = {
-    id: user.id,
-    email: user.email,
-    first_name: user.first_name,
-  };
-  return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
-}
-
-module.exports = { authMiddleware, signToken };
+module.exports = { signToken, authMiddleware };

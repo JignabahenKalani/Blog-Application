@@ -1,15 +1,15 @@
-// import all models
 const Post = require("./post");
-const Title = require("./title");
+const Post_Title = require("./post_title");
 const User = require("./user");
 
-Post.belongsTo(Title, {
-  foreignKey: "titleId",
-  as: "title",
+// Associations
+Post.belongsTo(Post_Title, {
+  foreignKey: "post_titleId",
+  as: "post_title",
 });
 
-Title.hasMany(Post, {
-  foreignKey: "titleId",
+Post_Title.hasMany(Post, {
+  foreignKey: "post_titleId",
   as: "posts",
 });
 
@@ -24,6 +24,6 @@ Post.belongsTo(User, {
 
 module.exports = {
   Post,
-  Title,
+  Post_Title,
   User,
 };

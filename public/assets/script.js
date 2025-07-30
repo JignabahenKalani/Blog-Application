@@ -6,13 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const addPostForm = document.getElementById("add-post-form");
   const logoutLink = document.getElementById("logout-link");
 
-  // Attach logout function
   if (logoutLink) {
     logoutLink.style.display = token ? "inline" : "none";
     logoutLink.addEventListener("click", logout);
   }
 
-  // Register Form Handler
   if (registerForm) {
     registerForm.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -20,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Login Form Handler
   if (loginForm) {
     loginForm.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -28,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Add Post Form Handler
   if (addPostForm) {
     if (!token) {
       alert("Please login first");
@@ -42,11 +38,91 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Auto-fetch posts if index.html
   if (document.getElementById("posts")) {
     fetchPosts();
+
+    // Add event listener for Edit buttons using event delegation
+    document.getElementById("posts").addEventListener("click", (e) => {
+      if (e.target.classList.contains("edit-btn")) {
+        const postId = e.target.getAttribute("data-id");
+        const postDiv = e.target.closest(".post");
+
+        // Get current title and content from the postDiv
+        const currentTitle = postDiv.querySelector("h3").innerText;
+        const currentContent = postDiv.querySelector("p").innerText;
+
+        // Replace post display with inline edit form
+        postDiv.innerHTML = `
+          <input type="text" id="edit-title-${postId}" value="${escapeHtml(currentTitle)}" />
+          <textarea id="edit-content-${postId}" rows="4">${escapeHtml(currentContent)}</textarea>
+          <br/>
+          <button id="save-${postId}">Save</button>
+          <button id="cancel-${postId}">Cancel</button>
+        `;
+
+        // Save button
+        document.getElementById(`save-${postId}`).addEventListener("click", () => {
+          const updatedTitle = document.getElementById(`edit-title-${postId}`).value.trim();
+          const updatedContent = document.getElementById(`edit-content-${postId}`).value.trim();
+
+          if (!updatedTitle || !updatedContent) {
+            alert("Please fill in all fields");
+            return;
+          }
+
+          fetch(`http://localhost:3001/api/posts/${postId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ title: updatedTitle, content: updatedContent }),
+          })
+            .then((res) => {
+              if (!res.ok) throw new Error("Failed to update post");
+              return res.json();
+            })
+            .then(() => {
+              alert("Post updated successfully!");
+              fetchPosts(); // Reload posts after update
+            })
+            .catch((err) => alert(err.message));
+        });
+
+        // Cancel button
+        document.getElementById(`cancel-${postId}`).addEventListener("click", () => {
+          fetchPosts(); // Reload posts to cancel editing
+        });
+      }
+
+      // Optional: Delete post on click of delete button (if you add one)
+      if (e.target.classList.contains("delete-btn")) {
+        const postId = e.target.getAttribute("data-id");
+        if (confirm("Are you sure you want to delete this post?")) {
+          fetch(`http://localhost:3001/api/posts/${postId}`, {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then((res) => {
+              if (!res.ok) throw new Error("Failed to delete post");
+              alert("Post deleted successfully!");
+              fetchPosts();
+            })
+            .catch((err) => alert(err.message));
+        }
+      }
+    });
   }
 });
+
+// Utility function to escape HTML to prevent XSS
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.innerText = text;
+  return div.innerHTML;
+}
 
 // Register
 function register() {
@@ -68,18 +144,28 @@ function register() {
   fetch("http://localhost:3001/api/users", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, email, password }),
+    body: JSON.stringify({
+      username,
+      email,
+      password,
+      confirm_password: confirmPassword,
+    }),
   })
     .then((res) => res.json())
     .then((data) => {
-      if (data.errors) {
-        alert(data.errors[0].message);
+      if (data.token) {
+        alert("Registration successful!");
+        localStorage.setItem("authToken", data.token);
+        token = data.token;
+        window.location.href = "index.html";
       } else {
-        alert("Registration successful! You can now log in.");
-        window.location.href = "login.html";
+        alert(data.message || "Registration failed.");
       }
     })
-    .catch((err) => console.error("Register Error:", err));
+    .catch((err) => {
+      console.error("Register Error:", err);
+      alert("Something went wrong during registration.");
+    });
 }
 
 // Login
@@ -103,7 +189,10 @@ function login() {
         alert(data.message || "Login failed");
       }
     })
-    .catch((err) => console.error("Login Error:", err));
+    .catch((err) => {
+      console.error("Login Error:", err);
+      alert("Login failed due to an error.");
+    });
 }
 
 // Logout
@@ -113,40 +202,47 @@ function logout() {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  }).then(() => {
+  }).finally(() => {
     localStorage.removeItem("authToken");
     token = null;
     window.location.href = "login.html";
   });
 }
 
-// Fetch Posts
+// Fetch Posts 
 function fetchPosts() {
-  fetch("http://localhost:3001/api/posts", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  fetch("http://localhost:3001/api/posts")
     .then((res) => res.json())
     .then((posts) => {
-      const postsContainer = document.getElementById("posts");
-      postsContainer.innerHTML = "";
+      const container = document.getElementById("posts");
+      container.innerHTML = "";
+
+      if (!posts.length) {
+        container.innerHTML = "<p>No posts found.</p>";
+        return;
+      }
+
       posts.forEach((post) => {
         const div = document.createElement("div");
         div.className = "post";
         div.innerHTML = `
-          <h3>${post.title}</h3>
-          <p>${post.content}</p>
-          <small>By ${post.postedBy} on ${new Date(post.createdOn).toLocaleString()}</small>
+          <h3>${escapeHtml(post.title)}</h3>
+          <p>${escapeHtml(post.content)}</p>
+          <small>By ${escapeHtml(post.postedBy)} on ${new Date(post.createdOn).toLocaleString()}</small>
+          <br/>
+          <button class="edit-btn" data-id="${post.id}">Edit</button>
+          <button class="delete-btn" data-id="${post.id}">Delete</button>
         `;
-        postsContainer.appendChild(div);
+        container.appendChild(div);
       });
     })
-    .catch((err) => console.error("Fetch Posts Error:", err));
+    .catch((err) => {
+      console.error("Failed to fetch posts:", err);
+      document.getElementById("posts").innerHTML = "<p>Error loading posts.</p>";
+    });
 }
 
-// Create Post
+// Create New Post
 function createPost() {
   const title = document.getElementById("post-title").value.trim();
   const content = document.getElementById("post-content").value.trim();
@@ -165,9 +261,17 @@ function createPost() {
     body: JSON.stringify({ title, content }),
   })
     .then((res) => res.json())
-    .then(() => {
-      alert("Post created successfully");
+    .then((data) => {
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+      alert("Post created successfully!");
       window.location.href = "index.html";
     })
-    .catch((err) => console.error("Create Post Error:", err));
+    .catch((err) => {
+      console.error("Create Post Error:", err);
+      alert("Failed to create post.");
+    });
 }
+

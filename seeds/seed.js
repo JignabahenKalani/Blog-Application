@@ -1,21 +1,30 @@
-// Import required packages
 const sequelize = require("../config/connection");
+const { Post, Post_Title, User } = require("../models");
 
-// import models
-const { Post } = require("../models");
+const postData = require("./post.json");
 
-
-// import seed data
-const postData = require("./posts.json");
-
-// Seed database
 const seedDatabase = async () => {
   await sequelize.sync({ force: true });
 
-  await Post.bulkCreate(postData);
+  // // Create a user
+  // const user = await User.create({
+  //   username: "dummy",
+  //   email: "dummy@example.com",
+  //   password: "password123",
+  // });
 
+  const title = await Post_Title.create({ post_title_name: "General" });
+
+  const enrichedPosts = postData.map((post) => ({
+    ...post,
+    userId: user.id,
+    post_titleId: title.id,
+  }));
+
+  await Post.bulkCreate(enrichedPosts);
+
+  console.log("Database seeded.");
   process.exit(0);
 };
 
-// Call seedDatabase function
 seedDatabase();

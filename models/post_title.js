@@ -2,11 +2,11 @@ const { Model,DataTypes }= require("sequelize");
 
 const sequelize = require ("../config/connection");
 
-class Title extends Model {}
+class Post_Title extends Model {}
 
-Title.init(
+Post_Title.init(
     {
-        title_post:{
+        post_title_name:{
             type: DataTypes.TEXT,
             allowNull: false,
         },
@@ -15,7 +15,8 @@ Title.init(
         sequelize,
         timestamps: false,
         freezeTableName: true,
+        underscored: true,
         modelName: "title",
     }
 );
-module.exports = Title;
+module.exports = Post_Title;

@@ -3,15 +3,15 @@ const app = require("express").Router();
 
 // import models
 
-const { Title } = require("../models/index");
+const { Post_Title } = require("../models/index");
 
 // new post 
 
 app.post("/", async(req,res)=>{
     try{
-        const { title_post } = req.body;
-        const title = await Title.create({ title_post });
-        res.status(201).json(title);
+        const { post_title_neme } = req.body;
+        const post_title = await Post_Title.create({ post_title_neme });
+        res.status(201).json(post_title);
     }catch(error){
         console.log(error);
         res.status(500).json({message: "Error adding Title", error: error });
@@ -23,9 +23,9 @@ app.post("/", async(req,res)=>{
 app.get("/",async(req,res)=>{
     try{
         console.log("Getting all...");
-        const titles = await Title.findAll();
-        console.log(titles);
-        res.json(titles);
+        const post_titles = await Post_Title.findAll();
+        console.log(post_titles);
+        res.json(post_titles);
 
     }catch(error){
         res.status(500).json({message: "Error adding Title", error: error });
@@ -34,8 +34,8 @@ app.get("/",async(req,res)=>{
 
 app.get("/:id", async(req,res)=>{
     try{
-        const title = await Post.findByPk(req.params.id);
-        res.json(title);
+        const post_title = await Post.findByPk(req.params.id);
+        res.json(post_title);
     }catch(error){
         res.status(500).json({message: "Error adding Title", error: error });
     }
@@ -45,7 +45,7 @@ app.get("/:id", async(req,res)=>{
 app.put("/:id", async (req, res) => {
   try {
     const { name } = req.body;
-    const post = await Title.update(
+    const post = await Post_Title.update(
       { name },
       { where: { id: req.params.id } }
     );
@@ -59,7 +59,7 @@ app.put("/:id", async (req, res) => {
 
 app.delete("//:id", async (req, res) => {
   try {
-    const title = await Title.destroy({ where: { id: req.params.id } });
+    const title = await Post_Title.destroy({ where: { id: req.params.id } });
     res.json(title);
   } catch (error) {
     res.status(500).json({ error: "Error deleting Title" });

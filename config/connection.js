@@ -1,22 +1,27 @@
-require("dontenv").config();
+require("dotenv").config();
+const Sequelize = require("sequelize");
 
-const Sequlize = require("sequlize");
-
-if(process.env.DB_PASSWORD === "ChangeMe...."){
-    console.error("Please update the database password in .env file.");
-    process.exit(1);
+if (process.env.DB_PASSWORD === "ChangeMe....") {
+  console.error("Please update the database password in .env file.");
+  process.exit(1);
 }
 
-const sequlize = process.env.JWSDB_URL
-  ? new Sequlize(process.env.JWSDB_URL)
-  : new Sequlize(
-    process.env.DB_DATABASE,
-    process.env.DB_USERNAME,
-    process.env.DB_PASSWORD,
-    {
-        host:process.env.DB_HOST,
-        dialect: process.env.DB_DIALECT,
-        port: process.env.DB_PORT, 
-    }
-  );
-module.exports = sequlize;
+const sequelize = process.env.JWSDB_URL
+  ? new Sequelize(process.env.JWSDB_URL, {
+      dialect: "mysql", 
+      logging: false,
+    })
+  : new Sequelize(
+      process.env.DB_DATABASE,
+      process.env.DB_USERNAME,
+      process.env.DB_PASSWORD,
+      {
+        host: process.env.DB_HOST,
+        dialect: process.env.DB_DIALECT || "mysql",
+        port: process.env.DB_PORT,
+        logging: false,
+      }
+    );
+
+module.exports = sequelize;
+
