@@ -13,7 +13,6 @@ const rebuild = process.argv[2] === "--rebuild";
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from /public
 app.use(express.static(path.join(__dirname, "public")));
 
 

@@ -1,4 +1,3 @@
-let token = localStorage.getItem("authToken");
 
 document.addEventListener("DOMContentLoaded", () => {
   const registerForm = document.getElementById("register-form");
@@ -6,7 +5,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const addPostForm = document.getElementById("add-post-form");
   const logoutLink = document.getElementById("logout-link");
 
+  // Show or hide logout link
   if (logoutLink) {
+    const token = localStorage.getItem("authToken");
     logoutLink.style.display = token ? "inline" : "none";
     logoutLink.addEventListener("click", logout);
   }
@@ -26,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (addPostForm) {
+    const token = localStorage.getItem("authToken");
     if (!token) {
       alert("Please login first");
       window.location.href = "login.html";
@@ -38,20 +40,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Fetch and display posts if on homepage
   if (document.getElementById("posts")) {
     fetchPosts();
 
-    // Add event listener for Edit buttons using event delegation
     document.getElementById("posts").addEventListener("click", (e) => {
       if (e.target.classList.contains("edit-btn")) {
         const postId = e.target.getAttribute("data-id");
         const postDiv = e.target.closest(".post");
 
-        // Get current title and content from the postDiv
         const currentTitle = postDiv.querySelector("h3").innerText;
         const currentContent = postDiv.querySelector("p").innerText;
 
-        // Replace post display with inline edit form
         postDiv.innerHTML = `
           <input type="text" id="edit-title-${postId}" value="${escapeHtml(currentTitle)}" />
           <textarea id="edit-content-${postId}" rows="4">${escapeHtml(currentContent)}</textarea>
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
             },
             body: JSON.stringify({ title: updatedTitle, content: updatedContent }),
           })
@@ -83,31 +83,28 @@ document.addEventListener("DOMContentLoaded", () => {
               return res.json();
             })
             .then(() => {
-              alert("Post updated successfully!");
-              fetchPosts(); // Reload posts after update
+              alert("Post updated successfully.");
+              fetchPosts();
             })
             .catch((err) => alert(err.message));
         });
 
         // Cancel button
-        document.getElementById(`cancel-${postId}`).addEventListener("click", () => {
-          fetchPosts(); // Reload posts to cancel editing
-        });
+        document.getElementById(`cancel-${postId}`).addEventListener("click", fetchPosts);
       }
 
-      // Optional: Delete post on click of delete button (if you add one)
       if (e.target.classList.contains("delete-btn")) {
         const postId = e.target.getAttribute("data-id");
         if (confirm("Are you sure you want to delete this post?")) {
           fetch(`http://localhost:3001/api/posts/${postId}`, {
             method: "DELETE",
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
             },
           })
             .then((res) => {
               if (!res.ok) throw new Error("Failed to delete post");
-              alert("Post deleted successfully!");
+              alert("Post deleted successfully.");
               fetchPosts();
             })
             .catch((err) => alert(err.message));
@@ -117,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Utility function to escape HTML to prevent XSS
+// Escape HTML (prevent XSS)
 function escapeHtml(text) {
   const div = document.createElement("div");
   div.innerText = text;
@@ -144,19 +141,13 @@ function register() {
   fetch("http://localhost:3001/api/users", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username,
-      email,
-      password,
-      confirm_password: confirmPassword,
-    }),
+    body: JSON.stringify({ username, email, password, confirm_password: confirmPassword }),
   })
     .then((res) => res.json())
     .then((data) => {
       if (data.token) {
-        alert("Registration successful!");
+        alert("Registration successful.");
         localStorage.setItem("authToken", data.token);
-        token = data.token;
         window.location.href = "index.html";
       } else {
         alert(data.message || "Registration failed.");
@@ -182,11 +173,10 @@ function login() {
     .then((data) => {
       if (data.token) {
         localStorage.setItem("authToken", data.token);
-        token = data.token;
-        alert("Login successful!");
+        alert("Login successful.");
         window.location.href = "index.html";
       } else {
-        alert(data.message || "Login failed");
+        alert(data.message || "Login failed.");
       }
     })
     .catch((err) => {
@@ -200,16 +190,15 @@ function logout() {
   fetch("http://localhost:3001/api/users/logout", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${localStorage.getItem("authToken")}`,
     },
   }).finally(() => {
     localStorage.removeItem("authToken");
-    token = null;
     window.location.href = "login.html";
   });
 }
 
-// Fetch Posts 
+// Fetch all posts
 function fetchPosts() {
   fetch("http://localhost:3001/api/posts")
     .then((res) => res.json())
@@ -242,7 +231,7 @@ function fetchPosts() {
     });
 }
 
-// Create New Post
+// Create new post
 function createPost() {
   const title = document.getElementById("post-title").value.trim();
   const content = document.getElementById("post-content").value.trim();
@@ -256,7 +245,7 @@ function createPost() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${localStorage.getItem("authToken")}`,
     },
     body: JSON.stringify({ title, content }),
   })
@@ -266,7 +255,7 @@ function createPost() {
         alert(data.error);
         return;
       }
-      alert("Post created successfully!");
+      alert("Post created successfully.");
       window.location.href = "index.html";
     })
     .catch((err) => {
@@ -274,4 +263,3 @@ function createPost() {
       alert("Failed to create post.");
     });
 }
-

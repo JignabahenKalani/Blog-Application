@@ -1,12 +1,13 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family:'Times New Roman', Times, serif;
   margin: 0; padding: 0;
-  background: #f7f7f7;
+  background: #e7ffe3;
   color: #333;
+  justify-content: center;
 }
 
 header {
-  background: #a2ad2c;
+  background: #b76d31;
   color: white;
   padding: 1rem 2rem;
   display: flex;
@@ -74,9 +75,14 @@ nav a:hover {
 }
 
 .posts-container {
-  max-width: 700px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* responsive grid */
+  gap: 1.5rem;
+  max-width: 1000px;
   margin: 2rem auto;
+  padding: 0 1rem;
 }
+
 
 .post {
   background: white;
@@ -93,4 +99,8 @@ nav a:hover {
 
 .post small {
   color: #777;
+}
+.post:hover {
+  transform: translateY(-4px);
+  background-color: bisque;
 }

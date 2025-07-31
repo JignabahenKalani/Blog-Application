@@ -17,7 +17,7 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const { data } = jwt.verify(token, secret);
-    req.user = data; // attach user info from token payload to request object
+    req.user = data; 
     next();
   } catch (err) {
     console.error("Invalid token:", err.message);
