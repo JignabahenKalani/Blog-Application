@@ -51,5 +51,5 @@ A simple and user-friendly Full Stack Blog Application to register users, create
  express,sequelize,mysql2,jsonwebtoken,bcrypt,nodemon (dev dependency)
 
 ## 🌐 Live Demo
-View the live site here: 
+View the live site here: https://vimeo.com/1106793625?ts=0&share=copy or blog-application-production-4911.up.railway.app( might be it is not working)
 My github link here: https://github.com/JignabahenKalani
